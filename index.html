@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#111111" />
+    <title>ColecoVision</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="screen-frame">
+        <canvas id="screen" width="272" height="208" tabindex="0" aria-label="ColecoVision screen"></canvas>
+        <p class="paused-label">Paused</p>
+        <p class="bios-label">Load the ColecoVision BIOS to switch on</p>
+      </div>
+
+      <section id="toolbar" class="toolbar" aria-label="Console">
+        <span class="toolbar-group">
+          <button type="button" data-action="pause" title="P or the Pause key">Pause</button>
+          <button type="button" data-action="reset" title="The console's reset button: restarts the game">Reset</button>
+          <button type="button" data-action="power" title="Switch the console off and on again">Power cycle</button>
+          <button type="button" data-action="fullscreen" title="Esc leaves full screen">Full screen</button>
+          <select name="tv" aria-label="TV standard">
+            <option value="ntsc" selected>NTSC (60 Hz)</option>
+            <option value="pal">PAL (50 Hz)</option>
+          </select>
+          <label title="Opcode's Super Game Module: more RAM and an AY-3-8910 sound chip, for the games that use it">
+            <input type="checkbox" name="sgm" checked /> Super Game Module
+          </label>
+        </span>
+        <span class="toolbar-group">
+          <button type="button" data-action="save-state" title="Save the whole console, to come back to later">
+            Save state
+          </button>
+          <select name="state-slot" aria-label="Save states"></select>
+          <button type="button" data-action="load-state">Load</button>
+          <button type="button" data-action="delete-state">Delete</button>
+          <button type="button" data-action="export-state" title="Download the current state as a file">Export</button>
+          <button type="button" data-action="import-state">Import...</button>
+        </span>
+        <span class="toolbar-message" role="status"></span>
+        <input type="file" name="state-file" accept=".colstate" hidden />
+      </section>
+
+      <section id="cart-panel" class="cart-panel" data-state="empty" data-bios="missing" aria-label="Cartridge slot">
+        <div class="bios-missing">
+          <p class="cart-title">First, the console needs its BIOS</p>
+          <p class="cart-hint">
+            Choose or drop your 8K ColecoVision BIOS image (often called <code>coleco.rom</code>). It stays in this
+            browser, so you only do this once.
+          </p>
+          <button type="button" data-action="choose-bios">Choose BIOS...</button>
+        </div>
+        <div class="cart-empty">
+          <p class="cart-title">Drop a .col, .rom, .bin or .zip cartridge image here</p>
+          <button type="button" data-action="choose">Choose file...</button>
+        </div>
+        <div class="cart-loaded">
+          <p class="cart-title"><span class="cart-name"></span> <span class="cart-file"></span></p>
+          <div class="cart-actions">
+            <button type="button" data-action="choose">Change cartridge</button>
+            <button type="button" data-action="eject">Eject</button>
+            <label title="How the cartridge is wired; Auto goes by its size">
+              Cartridge
+              <select name="kind"></select>
+            </label>
+          </div>
+        </div>
+        <p class="zip-files" hidden>In this zip: <span class="zip-buttons"></span></p>
+        <p class="bios-loaded">
+          BIOS loaded <span class="bios-note"></span>
+          <button type="button" data-action="choose-bios">Replace...</button>
+          <button type="button" data-action="forget-bios">Forget</button>
+        </p>
+        <p class="cart-drop-hint">Release to insert</p>
+        <p class="cart-message" role="status"></p>
+        <input type="file" name="cart-file" accept=".col,.cv,.rom,.bin,.zip,.colstate" hidden />
+        <input type="file" name="bios-file" accept=".rom,.bin,.col" hidden />
+      </section>
+
+      <section id="controls" class="controls" aria-label="Controllers">
+        <div class="controls-row">
+          <label><input type="checkbox" name="show-keypad" checked /> On-screen keypad</label>
+          <label>
+            for
+            <select name="keypad-player" aria-label="Which controller the on-screen keypad presses">
+              <option value="0" selected>Player 1</option>
+              <option value="1">Player 2</option>
+            </select>
+          </label>
+          <label><input type="checkbox" name="sound" checked /> Sound</label>
+          <label>
+            Volume
+            <input type="range" name="volume" min="0" max="1" step="0.05" value="0.8" />
+          </label>
+          <span class="sound-hint" hidden>Click or press a key to start sound</span>
+        </div>
+        <div id="keypad" class="keypad">
+          <div class="keypad-keys" aria-label="Keypad"></div>
+          <div class="keypad-sides" aria-label="Side buttons"></div>
+        </div>
+        <p class="gamepad-status" aria-live="polite"></p>
+        <p class="controls-hint">
+          Keyboard (player 1): arrow keys for the joystick, Space or Z for the left button, X or C for the right one,
+          the number keys for the keypad, with - for * and = for #. Gamepads work as soon as you press a button; the
+          first is player 1, the second player 2. A is the left button, B the right; X and Y are * and #, Start is 1,
+          Back/Select is 2, and the shoulder buttons are 3 and 4.
+        </p>
+      </section>
+
+      <p id="status">Starting...</p>
+      <nav class="emulator-links" aria-label="Emulators">
+        Emulators:
+        <a href="https://mohrt.github.io/sz81/">Timex Sinclair 1000</a>
+        <a href="https://mohrt.github.io/c64/">Commodore 64</a>
+        <a href="https://mohrt.github.io/atari2600/">Atari 2600</a>
+        <strong aria-current="page">ColecoVision</strong>
+      </nav>
+      <footer class="site-links">
+        <a href="https://mohrt.com/">mohrt.com</a>
+        <a href="https://github.com/mohrt/colecovision" target="_blank" rel="noopener">Source on GitHub</a>
+        <a href="https://x.com/mohrt" target="_blank" rel="noopener">@mohrt on X</a>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
