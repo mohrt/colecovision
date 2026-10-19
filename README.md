@@ -1,5 +1,7 @@
 # ColecoVision in the browser
 
+**Play it at [mohrt.github.io/colecovision](https://mohrt.github.io/colecovision/)**
+
 A ColecoVision emulator written from scratch in TypeScript: a Z80 with every documented and undocumented instruction (it passes ZEXDOC and ZEXALL), the TMS9918A video chip drawn one scanline at a time, the SN76489 sound chip, both controllers with their keypads, MegaCart bank switching and Opcode's Super Game Module. Drop a `.col`, `.rom` or `.bin` file (or a `.zip` containing one) onto the page to play it.
 
 ## The BIOS
