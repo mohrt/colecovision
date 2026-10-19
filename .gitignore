@@ -3,7 +3,6 @@ dist/
 .DS_Store
 
 # The BIOS and cartridge images are copyrighted and never committed.
-# The deploy workflow adds public/roms/ from the SITE_ASSETS secret.
 public/roms/
 roms/
 *.col

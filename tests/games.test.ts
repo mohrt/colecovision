@@ -8,9 +8,10 @@ import { ColecoVision } from '../src/colecovision';
 import { framePng } from './helpers/png';
 
 // Cartridge images and the BIOS are copyrighted and never committed: put your own
-// cartridges in roms/ and the BIOS in public/roms/system/coleco.rom to run these.
+// cartridges in roms/ and give the BIOS as COLECO_BIOS=/path/to/coleco.rom to run these.
 const root = join(import.meta.dirname, '..');
-const biosPath = join(root, 'public', 'roms', 'system', 'coleco.rom');
+const localBios = join(root, 'public', 'roms', 'system', 'coleco.rom');
+const biosPath = process.env.COLECO_BIOS ?? localBios;
 const romsDir = join(root, 'roms');
 const cartridges =
   existsSync(biosPath) && existsSync(romsDir)

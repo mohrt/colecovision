@@ -39,13 +39,12 @@ function requireElement<T extends HTMLElement>(selector: string): T {
 
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'colecovision';
 
-/** Where the deployed site keeps its BIOS (added at deploy time, never committed). */
-const SITE_BIOS_PATH = 'roms/system/coleco.rom';
+const PRELOADED_BIOS_PATH = 'roms/system/coleco.rom';
 
-/** The site's BIOS, or null if it doesn't provide one. */
-async function loadSiteBios(): Promise<Uint8Array | null> {
+/** A BIOS served alongside the page, or null if there is none. */
+async function loadPreloadedBios(): Promise<Uint8Array | null> {
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}${SITE_BIOS_PATH}`);
+    const response = await fetch(`${import.meta.env.BASE_URL}${PRELOADED_BIOS_PATH}`);
     if (!response.ok) return null;
     const data = new Uint8Array(await response.arrayBuffer());
     // The size check also rejects the dev server's index.html fallback for a missing file.
@@ -97,14 +96,12 @@ async function main(): Promise<void> {
     };
 
     // --- BIOS ------------------------------------------------------------------------
-    // A BIOS the user gives is kept in the browser and wins over the site's own copy.
-    let siteBios: Uint8Array | null = null;
+    // A BIOS the user gives is kept in the browser and wins over a preloaded one.
+    let preloadedBios: Uint8Array | null = null;
     let ownBios = false;
     const showBiosState = () => {
       const bios = machine.bios;
-      let note = '';
-      if (bios && crc32(bios) !== KNOWN_BIOS_CRC) note = '(not the usual Coleco BIOS)';
-      else if (bios && !ownBios) note = '(provided by this site)';
+      const note = bios && crc32(bios) !== KNOWN_BIOS_CRC ? '(not the usual Coleco BIOS)' : '';
       cartPanel.showBios(bios !== null, note, ownBios);
       screenFrame.classList.toggle('no-bios', bios === null);
       updateCanSave();
@@ -206,7 +203,7 @@ async function main(): Promise<void> {
       onForgetBios: async () => {
         await biosStore.forget();
         ownBios = false;
-        machine.setBios(siteBios);
+        machine.setBios(preloadedBios);
         showBiosState();
       },
       onEject: eject,
@@ -351,9 +348,9 @@ async function main(): Promise<void> {
       requestAnimationFrame(frame);
     };
 
-    const [storedBios, providedBios] = await Promise.all([biosStore.load().catch(() => undefined), loadSiteBios()]);
-    siteBios = providedBios;
-    let startBios = siteBios;
+    const [storedBios, servedBios] = await Promise.all([biosStore.load().catch(() => undefined), loadPreloadedBios()]);
+    preloadedBios = servedBios;
+    let startBios = preloadedBios;
     if (storedBios) {
       try {
         startBios = checkBios(storedBios).bios;

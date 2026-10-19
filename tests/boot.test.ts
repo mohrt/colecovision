@@ -4,10 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { checkBios } from '../src/bios/bios-store';
 import { ColecoVision } from '../src/colecovision';
 
-// The real BIOS is copyrighted and never committed: this runs with the site's copy in
-// public/roms/system/coleco.rom, or one given as COLECO_BIOS=/path/to/coleco.rom.
-const sitePath = join(import.meta.dirname, '..', 'public', 'roms', 'system', 'coleco.rom');
-const biosPath = process.env.COLECO_BIOS ?? (existsSync(sitePath) ? sitePath : undefined);
+// The real BIOS is copyrighted and never committed: this runs with one given as COLECO_BIOS=/path/to/coleco.rom.
+const localPath = join(import.meta.dirname, '..', 'public', 'roms', 'system', 'coleco.rom');
+const biosPath = process.env.COLECO_BIOS ?? (existsSync(localPath) ? localPath : undefined);
 
 describe.skipIf(!biosPath)('the Coleco BIOS', () => {
   it('starts up and draws its screen with no cartridge in', () => {

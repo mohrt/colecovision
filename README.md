@@ -4,12 +4,7 @@ A ColecoVision emulator written from scratch in TypeScript: a Z80 with every doc
 
 ## The BIOS
 
-Every ColecoVision game uses routines in the console's 8K BIOS ROM. It is still under copyright, so it is never committed to this repository.
-
-- **On the site**: the page uses `roms/system/coleco.rom` when the site provides it. Locally, put the file in `public/roms/system/coleco.rom` (that folder is ignored by git). The deployed site gets it from the `SITE_ASSETS` secret (see Deploying).
-- **Your own**: without a site copy, the page asks for a BIOS, and you choose or drop your own image. It is kept in the browser's storage, so you only do this once, and it takes precedence over the site's copy; **Forget** removes it.
-
-A BIOS other than the usual Coleco one (CRC-32 `3AA93EF3`) is accepted with a warning.
+Every ColecoVision game uses routines in the console's 8K BIOS ROM. It is still under copyright, so it is not included. If the page asks for it, choose or drop your own image (often called `coleco.rom`). It is kept in the browser's storage, so you only do this once; **Forget** removes it. A BIOS other than the usual Coleco one (CRC-32 `3AA93EF3`) is accepted with a warning.
 
 No game files are included either. Use images of cartridges you own, or homebrews whose authors allow it.
 
@@ -33,15 +28,9 @@ npm run dev             # http://localhost:5173
 npm test
 npm run fetch:zex       # optional: the ZEXDOC and ZEXALL Z80 exercisers
 ZEX=1 npm test          # also runs them (a minute or two each)
-COLECO_BIOS=/path/to/coleco.rom npm test   # boots a BIOS (public/roms/system/coleco.rom is used if present)
+COLECO_BIOS=/path/to/coleco.rom npm test   # also boots your BIOS and plays the cartridges in roms/
 ```
 
 ## Deploying
 
 `.github/workflows/pages.yml` tests and builds the site and deploys it to GitHub Pages on every push to `main` (Pages source: "GitHub Actions").
-
-Files that must not be in git reach the site through the `SITE_ASSETS` repository secret: a base64 gzipped tarball that the workflow unpacks into `public/` before building. To send the BIOS:
-
-```sh
-tar czf - -C public roms/system/coleco.rom | base64 | gh secret set SITE_ASSETS --repo mohrt/colecovision
-```
