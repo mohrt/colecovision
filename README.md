@@ -6,7 +6,7 @@ A ColecoVision emulator written from scratch in TypeScript: a Z80 with every doc
 
 ## The BIOS
 
-Every ColecoVision game uses routines in the console's 8K BIOS ROM. It is still under copyright, so it is not included. If the page asks for it, choose or drop your own image (often called `coleco.rom`). It is kept in the browser's storage, so you only do this once; **Forget** removes it. A BIOS other than the usual Coleco one (CRC-32 `3AA93EF3`) is accepted with a warning.
+Every ColecoVision game uses routines in the console's 8K BIOS ROM. It is still under copyright, so the site never serves it. On the first visit the page shows a setup panel in place of the screen asking for your own image (exactly 8,192 bytes, often called `coleco.rom`, `colecovision.rom`, `coleco.bin` or `BIOS.col`; MAME's `coleco.zip` works too). It is kept in the browser's storage, so later visits start straight away. **BIOS...** in the toolbar reopens the panel over the paused console to replace it, and **Forget** in the cartridge panel removes it. A BIOS other than the usual Coleco one (CRC-32 `3AA93EF3`) is accepted after a warning.
 
 No commercial games are included either. Use images of cartridges you own, or homebrews whose authors allow it.
 

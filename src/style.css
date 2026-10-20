@@ -50,8 +50,7 @@ main {
   width: min(100vw, calc(100vh * var(--screen-aspect)));
 }
 
-.paused-label,
-.bios-label {
+.paused-label {
   display: none;
   position: absolute;
   top: 50%;
@@ -66,13 +65,179 @@ main {
   transform: translateY(-50%);
 }
 
-.screen-frame.paused .paused-label,
-.screen-frame.no-bios .bios-label {
+.screen-frame.paused .paused-label {
   display: block;
 }
 
-.screen-frame.paused.no-bios .paused-label {
+/* BIOS setup: shown in place of the screen until the BIOS is loaded */
+
+body.needs-bios #screen,
+body.needs-bios .paused-label,
+body.needs-bios .toolbar,
+body.needs-bios .cart-panel,
+body.needs-bios .controls {
+  display: none !important;
+}
+
+.bios-setup {
+  width: var(--screen-width);
+  min-height: calc(var(--screen-width) / var(--screen-aspect));
+  box-sizing: border-box;
+  padding: 1.5rem 1.75rem;
+  border: 2px dashed var(--accent);
+  border-radius: 10px;
+  background: #1a1a1a;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.bios-setup[hidden] {
   display: none;
+}
+
+.bios-setup p {
+  margin: 0;
+}
+
+.bios-setup h1 {
+  margin: 0 0 0.5rem;
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.bios-setup-lead {
+  color: #bbb;
+  line-height: 1.45;
+}
+
+.bios-setup code {
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 0.85em;
+}
+
+.bios-rom {
+  display: grid;
+  gap: 0.25rem;
+  margin: 1rem 0;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #3d3d3d;
+  border-left: 4px solid #ff8a80;
+  border-radius: 6px;
+  background: #202020;
+}
+
+.bios-rom[data-state='loaded'] {
+  border-left-color: #9ad284;
+}
+
+.bios-rom[data-state='warning'] {
+  border-left-color: #c9a227;
+}
+
+.bios-rom-heading strong {
+  color: #eee;
+  font-size: 1rem;
+}
+
+.bios-need {
+  margin-left: 0.4rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 4px;
+  background: #3d2424;
+  color: #ff8a80;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bios-rom-detail,
+.bios-rom-names,
+.bios-tip {
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.bios-rom-status {
+  color: #ff8a80;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bios-rom[data-state='warning'] .bios-rom-status {
+  color: #c9a227;
+}
+
+.bios-rom[data-state='loaded'] .bios-rom-status {
+  color: #9ad284;
+}
+
+.bios-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.bios-setup button {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background: #2a2a2a;
+  color: #eee;
+  font: inherit;
+  cursor: pointer;
+}
+
+.bios-setup button.primary,
+.bios-setup button[data-action='use-bios']:not(:disabled) {
+  border-color: var(--accent);
+  background: #1f3a63;
+  color: #fff;
+}
+
+.bios-setup button:hover:not(:disabled),
+.bios-setup button:focus-visible {
+  border-color: var(--accent-soft);
+  outline: none;
+}
+
+.bios-setup button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.bios-setup-message:not(:empty) {
+  margin-top: 0.75rem !important;
+  color: #ff8a80;
+}
+
+.bios-storage-note:not(:empty) {
+  margin-top: 0.75rem !important;
+  color: #c9a227;
+}
+
+.bios-drop-hint {
+  display: none;
+  padding: 2rem 0;
+  color: #fff;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.bios-setup.drag-over {
+  border-style: solid;
+  background: #1a2538;
+}
+
+.bios-setup.drag-over > :not(.bios-drop-hint) {
+  display: none;
+}
+
+.bios-setup.drag-over .bios-drop-hint {
+  display: block;
 }
 
 #status {
@@ -199,7 +364,6 @@ input[type='range'] {
   margin: 0;
 }
 
-.bios-missing,
 .cart-empty,
 .cart-loaded {
   display: none;
@@ -208,7 +372,6 @@ input[type='range'] {
   gap: 0.6rem;
 }
 
-.cart-panel[data-bios='missing'] .bios-missing,
 .cart-panel[data-bios='loaded'][data-state='empty'] .cart-empty,
 .cart-panel[data-bios='loaded'][data-state='loaded'] .cart-loaded {
   display: flex;

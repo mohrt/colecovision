@@ -1,6 +1,7 @@
 import { AudioOutput } from './audio/audio-output';
 import { BiosStore, KNOWN_BIOS_CRC, checkBios, crc32 } from './bios/bios-store';
 import { BIOS_SIZE } from './bus';
+import { askForBios } from './ui/bios-setup';
 import type { CartridgeKind } from './cart/cartridge';
 import { createCartridge, detectKind, hasHeader, headerWarning } from './cart/detect';
 import { STATE_EXTENSION, filesFrom, readMedia, titleFromFileName } from './cart/load';
@@ -40,21 +41,6 @@ function requireElement<T extends HTMLElement>(selector: string): T {
 
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'colecovision';
 
-const PRELOADED_BIOS_PATH = 'roms/system/coleco.rom';
-
-/** A BIOS served alongside the page, or null if there is none. */
-async function loadPreloadedBios(): Promise<Uint8Array | null> {
-  try {
-    const response = await fetch(`${import.meta.env.BASE_URL}${PRELOADED_BIOS_PATH}`);
-    if (!response.ok) return null;
-    const data = new Uint8Array(await response.arrayBuffer());
-    // The size check also rejects the dev server's index.html fallback for a missing file.
-    return data.length === BIOS_SIZE ? data : null;
-  } catch {
-    return null;
-  }
-}
-
 /** An 8K image without a cartridge header that is the Coleco BIOS, or is named like one. */
 function looksLikeBios(image: Uint8Array, name: string): boolean {
   if (image.length !== BIOS_SIZE || hasHeader(image)) return false;
@@ -65,6 +51,7 @@ async function main(): Promise<void> {
   const canvas = requireElement<HTMLCanvasElement>('#screen');
   const status = requireElement<HTMLParagraphElement>('#status');
   const screenFrame = requireElement<HTMLElement>('.screen-frame');
+  const biosSetup = requireElement<HTMLElement>('#bios-setup');
 
   try {
     document.documentElement.style.setProperty('--screen-aspect', SCREEN_ASPECT.toFixed(4));
@@ -82,6 +69,8 @@ async function main(): Promise<void> {
 
     const stores = await openBrowserStores().catch((error: unknown) => {
       console.warn('Browser storage is unavailable; the BIOS and save states will last until the page is closed.', error);
+      requireElement<HTMLElement>('.bios-storage-note').textContent =
+        "This browser isn't letting the page store files, so the BIOS will be forgotten when you close it.";
       return memoryStores();
     });
     const biosStore = new BiosStore(stores.bios as KeyValueStore<Uint8Array>);
@@ -89,6 +78,8 @@ async function main(): Promise<void> {
 
     let current: CurrentCartridge | null = null;
     let paused = false;
+    /** While the BIOS setup is shown in place of the screen. */
+    let choosingBios = false;
     const focusScreen = () => canvas.focus();
 
     const updateStatus = () => {
@@ -97,25 +88,34 @@ async function main(): Promise<void> {
     };
 
     // --- BIOS ------------------------------------------------------------------------
-    // A BIOS the user gives is kept in the browser and wins over a preloaded one.
-    let preloadedBios: Uint8Array | null = null;
-    let ownBios = false;
+    // The user's own BIOS, kept in the browser; the site never serves one.
     const showBiosState = () => {
       const bios = machine.bios;
       const note = bios && crc32(bios) !== KNOWN_BIOS_CRC ? '(not the usual Coleco BIOS)' : '';
-      cartPanel.showBios(bios !== null, note, ownBios);
-      screenFrame.classList.toggle('no-bios', bios === null);
+      cartPanel.showBios(bios !== null, note);
       updateCanSave();
       updateStatus();
     };
     const useBios = async (bytes: Uint8Array) => {
       const { bios, warning } = checkBios(bytes);
       machine.setBios(bios);
-      ownBios = true;
       await biosStore.save(bios);
       showBiosState();
       if (warning) cartPanel.showMessage(warning, true);
       audio?.flush();
+    };
+    /** Shows the BIOS setup in place of the (paused) screen until the user gives a BIOS or goes back. */
+    const openBiosSetup = async (whileRunning: boolean) => {
+      if (choosingBios) return;
+      choosingBios = true;
+      audio?.flush();
+      if (!whileRunning) status.textContent = 'Load the BIOS above to switch the console on.';
+      const chosen = await askForBios(biosSetup, { whileRunning, current: machine.bios });
+      choosingBios = false;
+      emulator.resetTiming();
+      if (chosen) await useBios(chosen.bios);
+      updateStatus();
+      focusScreen();
     };
 
     // --- Cartridges ------------------------------------------------------------------
@@ -205,9 +205,9 @@ async function main(): Promise<void> {
       },
       onForgetBios: async () => {
         await biosStore.forget();
-        ownBios = false;
-        machine.setBios(preloadedBios);
+        machine.setBios(null);
         showBiosState();
+        void openBiosSetup(false);
       },
       onEject: eject,
       onKind: (choice) => {
@@ -350,7 +350,7 @@ async function main(): Promise<void> {
       const elapsed = Math.min(now - last, MAX_FRAME_MS);
       last = now;
       pollGamepads();
-      if (!paused) {
+      if (!paused && !choosingBios) {
         emulator.run(elapsed);
         audio?.play(emulator.takeAudioSamples());
       }
@@ -358,22 +358,23 @@ async function main(): Promise<void> {
       requestAnimationFrame(frame);
     };
 
-    const [storedBios, servedBios] = await Promise.all([biosStore.load().catch(() => undefined), loadPreloadedBios()]);
-    preloadedBios = servedBios;
-    let startBios = preloadedBios;
+    requireElement<HTMLButtonElement>('#toolbar [data-action="change-bios"]').addEventListener('click', () => {
+      void openBiosSetup(true);
+    });
+
+    const storedBios = await biosStore.load().catch(() => undefined);
     if (storedBios) {
       try {
-        startBios = checkBios(storedBios).bios;
-        ownBios = true;
+        machine.setBios(checkBios(storedBios).bios);
       } catch {
         await biosStore.forget();
       }
     }
-    if (startBios) machine.setBios(startBios);
     showBiosState();
     cartPanel.showEmpty();
     focusScreen();
     requestAnimationFrame(frame);
+    if (!machine.bios) await openBiosSetup(false);
   } catch (error) {
     status.textContent = error instanceof Error ? error.message : String(error);
     throw error;

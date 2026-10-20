@@ -12,7 +12,41 @@
       <div class="screen-frame">
         <canvas id="screen" width="272" height="208" tabindex="0" aria-label="ColecoVision screen"></canvas>
         <p class="paused-label">Paused</p>
-        <p class="bios-label">Load the ColecoVision BIOS to switch on</p>
+        <section id="bios-setup" class="bios-setup" aria-labelledby="bios-setup-title" hidden>
+          <h1 id="bios-setup-title">First, load the ColecoVision BIOS</h1>
+          <p class="bios-setup-lead">
+            The ColecoVision can't switch on without the BIOS ROM chip Coleco built into it: every game calls routines
+            in it. It is still under copyright, so it isn't included here: choose or drop your own BIOS image file. It
+            stays in this browser and is never sent anywhere. The browser remembers it, so you only need to do this
+            once.
+          </p>
+          <div class="bios-rom" data-state="missing">
+            <p class="bios-rom-heading"><strong>ColecoVision BIOS ROM</strong> <span class="bios-need">Required</span></p>
+            <p class="bios-rom-detail">
+              The console's built-in 8K ROM, the same in every ColecoVision. Exactly 8 KB (8,192 bytes); the usual one
+              has the CRC-32 checksum <code>3AA93EF3</code>.
+            </p>
+            <p class="bios-rom-names">
+              Often named <code>coleco.rom</code>, <code>colecovision.rom</code>, <code>coleco.bin</code> or
+              <code>BIOS.col</code>. MAME keeps it in <code>coleco.zip</code> as
+              <code>313 10031-4005 73108a.u2</code>; the zip itself works too.
+            </p>
+            <p class="bios-rom-status"></p>
+          </div>
+          <p class="bios-tip">
+            This is not a game: once the console is on, cartridge images (<code>.col</code>, <code>.rom</code>,
+            <code>.bin</code>) go in the cartridge slot below the screen.
+          </p>
+          <div class="bios-actions">
+            <button type="button" class="primary" data-action="choose-bios-file">Choose BIOS file...</button>
+            <button type="button" data-action="use-bios" disabled>Switch the console on</button>
+            <button type="button" data-action="back" hidden>Back to the console</button>
+          </div>
+          <p class="bios-setup-message" role="alert"></p>
+          <p class="bios-storage-note"></p>
+          <p class="bios-drop-hint">Release to load the BIOS</p>
+          <input type="file" name="bios-setup-file" hidden />
+        </section>
       </div>
 
       <section id="toolbar" class="toolbar" aria-label="Console">
@@ -21,6 +55,7 @@
           <button type="button" data-action="reset" title="The console's reset button: restarts the game">Reset</button>
           <button type="button" data-action="power" title="Switch the console off and on again">Power cycle</button>
           <button type="button" data-action="fullscreen" title="Esc leaves full screen">Full screen</button>
+          <button type="button" data-action="change-bios" title="Replace or check the console's BIOS">BIOS...</button>
           <select name="tv" aria-label="TV standard">
             <option value="ntsc" selected>NTSC (60 Hz)</option>
             <option value="pal">PAL (50 Hz)</option>
@@ -44,14 +79,6 @@
       </section>
 
       <section id="cart-panel" class="cart-panel" data-state="empty" data-bios="missing" aria-label="Cartridge slot">
-        <div class="bios-missing">
-          <p class="cart-title">First, the console needs its BIOS</p>
-          <p class="cart-hint">
-            Choose or drop your 8K ColecoVision BIOS image (often called <code>coleco.rom</code>). It stays in this
-            browser, so you only do this once.
-          </p>
-          <button type="button" data-action="choose-bios">Choose BIOS...</button>
-        </div>
         <div class="cart-empty">
           <p class="cart-title">Drop a .col, .rom, .bin or .zip cartridge image here</p>
           <button type="button" data-action="choose">Choose file...</button>

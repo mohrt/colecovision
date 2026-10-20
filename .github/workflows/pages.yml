@@ -38,6 +38,8 @@ jobs:
             mkdir -p public
             echo "$SITE_ASSETS" | base64 --decode | tar xz -C public
           fi
+      # Users load the copyrighted Coleco BIOS into their own browser; the site never serves it.
+      - run: rm -rf public/roms/system
 
       - run: npm run build
       - uses: actions/upload-pages-artifact@v5
