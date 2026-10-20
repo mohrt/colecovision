@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "fetch:zex": "node scripts/fetch-zex.mjs"
+    "fetch:zex": "node scripts/fetch-zex.mjs",
+    "build:games": "node scripts/build-games.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

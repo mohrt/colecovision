@@ -5,6 +5,7 @@ import type { CartridgeKind } from './cart/cartridge';
 import { createCartridge, detectKind, hasHeader, headerWarning } from './cart/detect';
 import { STATE_EXTENSION, filesFrom, readMedia, titleFromFileName } from './cart/load';
 import { Emulator } from './emulator';
+import { fetchGame, loadGameManifest, type BundledGame } from './games';
 import { GamepadManager, padName, readGamepad } from './io/gamepad-input';
 import { KeyboardInput } from './io/keyboard-input';
 import { SCREEN_ASPECT, Screen } from './render/screen';
@@ -126,9 +127,9 @@ async function main(): Promise<void> {
       audio?.flush();
     };
 
-    const insertImage = (image: Uint8Array, fileName: string) => {
+    const insertImage = (image: Uint8Array, fileName: string, title = titleFromFileName(fileName.split(' from ')[0])) => {
       const detectedKind = detectKind(image);
-      current = { image, fileName, title: titleFromFileName(fileName.split(' from ')[0]), detectedKind, kind: detectedKind };
+      current = { image, fileName, title, detectedKind, kind: detectedKind };
       insert(detectedKind);
       cartPanel.showCartridge(current.title, fileName);
       cartPanel.setKind(detectedKind, 'auto');
@@ -194,8 +195,10 @@ async function main(): Promise<void> {
           return;
         }
         if (!machine.bios) throw new Error('The console needs its BIOS before it can play a cartridge.');
-        insertImage(media.image, fromZip ? `${chosen.name} from ${file.name}` : chosen.name);
+        const game = bundledGames.find((entry) => entry.file === chosen.name);
+        insertImage(media.image, fromZip ? `${chosen.name} from ${file.name}` : chosen.name, game?.title);
       },
+      onGame: (index) => fetchGame(import.meta.env.BASE_URL, bundledGames[index]),
       onBiosFile: async (file) => {
         const files = await filesFrom(file);
         await useBios(new Uint8Array(await files[0].arrayBuffer()));
@@ -217,6 +220,13 @@ async function main(): Promise<void> {
         }
       },
       focusScreen,
+    });
+
+    let bundledGames: BundledGame[] = [];
+    void loadGameManifest(import.meta.env.BASE_URL).then((games) => {
+      bundledGames = games;
+      const href = (link?: string) => (link?.startsWith('games/') ? `${import.meta.env.BASE_URL}${link}` : link);
+      cartPanel.setGames(games.map((game) => ({ ...game, licenseHref: href(game.licenseUrl), sourceHref: href(game.sourceUrl) })));
     });
 
     const refreshStates = async () => toolbar.setStates(await saveStates.list());

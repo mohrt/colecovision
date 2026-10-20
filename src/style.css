@@ -305,6 +305,31 @@ input[type='range'] {
   color: #aaa;
 }
 
+.bundled-games-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem !important;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.cart-panel[data-bios='missing'] .bundled-games {
+  display: none;
+}
+
+.game-info {
+  margin-top: 0.35rem !important;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.game-info a {
+  color: var(--accent-soft);
+}
+
 .zip-buttons {
   display: inline-flex;
   flex-wrap: wrap;

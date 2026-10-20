@@ -24,6 +24,11 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Build the free games
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sdcc
+          npm run build:games
       - run: npm test
       - name: Add site assets
         env:

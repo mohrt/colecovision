@@ -5,6 +5,8 @@ dist/
 # The BIOS and cartridge images are copyrighted and never committed.
 public/roms/
 roms/
+# Free games are built from source by npm run build:games.
+public/games/
 *.col
 *.rom
 tests/fixtures/zex/

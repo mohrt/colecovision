@@ -1,8 +1,19 @@
 import { CARTRIDGE_KIND_LABELS, type CartridgeKind } from '../cart/cartridge';
 
+export interface GameListing {
+  title: string;
+  credit?: string;
+  license?: string;
+  licenseHref?: string;
+  sourceHref?: string;
+  hint?: string;
+}
+
 export interface CartPanelCallbacks {
   /** A file was dropped or chosen (a cartridge image, a zip, a save state, or the BIOS). */
   onFile(file: File): Promise<void>;
+  /** Downloads one of the free games. */
+  onGame(index: number): Promise<File>;
   /** A file chosen with the BIOS button. */
   onBiosFile(file: File): Promise<void>;
   onForgetBios(): Promise<void>;
@@ -26,6 +37,9 @@ export class CartPanel {
   private readonly kind: HTMLSelectElement;
   private readonly zipFiles: HTMLElement;
   private readonly zipButtons: HTMLElement;
+  private readonly gamePicker: HTMLSelectElement;
+  private readonly gameInfo: HTMLElement;
+  private games: GameListing[] = [];
   private zipChoices: File[] = [];
 
   constructor(
@@ -38,6 +52,13 @@ export class CartPanel {
     this.kind = requireChild(root, 'select[name="kind"]');
     this.zipFiles = requireChild(root, '.zip-files');
     this.zipButtons = requireChild(root, '.zip-buttons');
+    this.gamePicker = requireChild(root, 'select[name="bundled-game"]');
+    this.gameInfo = requireChild(root, '.game-info');
+    this.gamePicker.addEventListener('change', () => this.showGameInfo());
+    requireChild<HTMLButtonElement>(root, '[data-action="play-game"]').addEventListener('click', () => {
+      const index = Number(this.gamePicker.value);
+      this.run(async () => this.callbacks.onFile(await this.callbacks.onGame(index)));
+    });
 
     root.querySelectorAll<HTMLButtonElement>('[data-action="choose"]').forEach((button) =>
       button.addEventListener('click', () => this.fileInput.click()),
@@ -160,5 +181,42 @@ export class CartPanel {
 
   get zipContents(): File[] {
     return this.zipChoices;
+  }
+
+  setGames(games: GameListing[]): void {
+    this.games = games;
+    requireChild<HTMLElement>(this.root, '.bundled-games').hidden = games.length === 0;
+    this.gamePicker.replaceChildren(
+      ...games.map((game, index) => {
+        const option = document.createElement('option');
+        option.value = String(index);
+        option.textContent = game.title;
+        return option;
+      }),
+    );
+    this.showGameInfo();
+  }
+
+  private showGameInfo(): void {
+    const game = this.games[Number(this.gamePicker.value)];
+    this.gameInfo.replaceChildren();
+    if (!game) return;
+    const link = (href: string, text: string) => {
+      const anchor = document.createElement('a');
+      anchor.href = href;
+      anchor.target = '_blank';
+      anchor.rel = 'noopener';
+      anchor.textContent = text;
+      return anchor;
+    };
+    const parts: (string | Node)[] = [];
+    if (game.credit) parts.push(game.credit);
+    if (game.license) parts.push(game.licenseHref ? link(game.licenseHref, game.license) : game.license);
+    if (game.sourceHref) parts.push(link(game.sourceHref, 'source'));
+    if (game.hint) parts.push(game.hint);
+    parts.forEach((part, i) => {
+      if (i > 0) this.gameInfo.append(' · ');
+      this.gameInfo.append(part);
+    });
   }
 }

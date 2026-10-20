@@ -1,0 +1,42 @@
+{
+  "libcv": {
+    "url": "http://www.colecovision.eu/ColecoVision/development/libcv-0.28.tar.gz",
+    "tarSha256": "5596ab058548a9c53c56f3bc715c67c54faf3f184d23ad64844a4003b4daf3a9",
+    "credit": "LibCV 0.28 by Philipp Klaus Krause",
+    "license": "GNU LGPL v2.1",
+    "sourceUrl": "http://www.colecovision.eu/ColecoVision/development/libcv.shtml"
+  },
+  "source": {
+    "repo": "sehugg/8bitworkshop",
+    "commit": "09d99f2c3028e27b397df8471baec29975ec154b",
+    "dir": "presets/coleco",
+    "headers": ["common.h", "stars.h"],
+    "licenseFile": "LICENSE"
+  },
+  "games": [
+    {
+      "title": "Climber",
+      "file": "climber.rom",
+      "sources": ["climber.c", "common.c"],
+      "credit": "Steven Hugg (8bitworkshop)",
+      "license": "GNU GPL v3",
+      "hint": "Joystick runs and climbs the ladders, the left button jumps. Reach the top."
+    },
+    {
+      "title": "Shoot",
+      "file": "shoot.rom",
+      "sources": ["shoot.c", "common.c", "stars.c"],
+      "credit": "Steven Hugg (8bitworkshop)",
+      "license": "GNU GPL v3",
+      "hint": "Joystick moves your ship left and right, the left button fires."
+    },
+    {
+      "title": "Siege",
+      "file": "siege.rom",
+      "sources": ["siegegame.c", "common.c"],
+      "credit": "Steven Hugg (8bitworkshop)",
+      "license": "GNU GPL v3",
+      "hint": "Joystick steers your trail; the computer plays the other side. Don't run into a wall or a trail."
+    }
+  ]
+}
