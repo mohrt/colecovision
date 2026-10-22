@@ -38,5 +38,79 @@
       "license": "GNU GPL v3",
       "hint": "Joystick steers your trail; the computer plays the other side. Don't run into a wall or a trail."
     }
+  ],
+  "cvbasic": {
+    "compiler": { "repo": "nanochess/CVBasic", "commit": "fd70d3d33f24951605de9405fc0630855e79c819" },
+    "assembler": { "repo": "nanochess/gasm80", "commit": "7d08ec419157a9afbdc759ea29b67d9b486e2cb2" },
+    "licenseFile": "LICENSE.txt",
+    "games": [
+      {
+        "title": "Brinquitos",
+        "file": "brinquitos.rom",
+        "source": "examples/brinquitos.bas",
+        "credit": "Óscar Toledo G. (nanochess)",
+        "license": "BSD 2-clause",
+        "hint": "The left button jumps. Hop from cloud to cloud and don't fall."
+      },
+      {
+        "title": "Space Attack",
+        "file": "space-attack.rom",
+        "source": "examples/space_attack.bas",
+        "credit": "Óscar Toledo G. (nanochess)",
+        "license": "BSD 2-clause",
+        "hint": "Joystick moves your ship left and right, the left button fires."
+      },
+      {
+        "title": "Viboritas",
+        "file": "viboritas.rom",
+        "source": "examples/viboritas.bas",
+        "credit": "Óscar Toledo G. (nanochess)",
+        "license": "BSD 2-clause",
+        "hint": "Joystick runs and climbs the ladders past the snakes; press the left button at the exit in the bottom right corner."
+      }
+    ]
+  },
+  "downloads": [
+    {
+      "title": "Cye",
+      "file": "cye.rom",
+      "url": "http://www.colecovision.eu/ColecoVision/games/Cye.1.1.rom",
+      "sha256": "f7ae3fc976157b1c51beab941b0c9827b937090cd1f62b56f42d3e26bd372262",
+      "credit": "Philipp Klaus Krause (version 1.1)",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "hint": "Joystick moves the pointer and the left button picks from the menu. A puzzle like Kye: collect every diamond."
+    },
+    {
+      "title": "Monster Masher",
+      "file": "monster-masher.rom",
+      "url": "http://www.colecovision.eu/ColecoVision/games/MM-1.0.tar.gz",
+      "sha256": "addbec4f4d3c6b26d2171e85e45395540c7eca17b4fcc50e98136049ad8a5e39",
+      "archiveMember": "MM/MM.rom",
+      "licenseMember": "MM/COPYING",
+      "credit": "Philipp Klaus Krause",
+      "license": "GNU GPL v3 or later",
+      "hint": "The left button skips the intro; the joystick moves the pointer and the left button picks from the menu. Push boulders to crush the monsters."
+    },
+    {
+      "title": "Search for the Stolen Crown Jewels",
+      "file": "crown-jewels.rom",
+      "url": "http://www.colecovision.eu/ColecoVision/games/SCJ.rom",
+      "sha256": "6340bba3b41f8489a6490190e6fb51b2f90edcc3d32b7a5c4fe106c5ad0fd286",
+      "credit": "Philipp Klaus Krause",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "hint": "Pick a game on the keypad (1-3 for one player, 4-6 for two), then use the joystick and the left button."
+    },
+    {
+      "title": "Shunting Puzzle",
+      "file": "shunting-puzzle.rom",
+      "url": "http://www.colecovision.eu/ColecoVision/games/SP.rom",
+      "sha256": "c9943fbc5d1fdd25018bbd8b1bbb487b8f47b84996df9034486cfde549d27fe1",
+      "credit": "Philipp Klaus Krause",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "hint": "Pick a level on the keypad. Joystick moves the engine, the buttons uncouple, the keypad numbers switch the points."
+    }
   ]
 }

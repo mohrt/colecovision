@@ -47,7 +47,8 @@ describe.skipIf(cartridges.length === 0)('cartridges', () => {
       }
       expect(framesInCartridge).toBeGreaterThan(FPS);
       expect(machine.vdp.registers[1] & 0x40).toBe(0x40);
-      expect(new Set(machine.vdp.framebuffer).size).toBeGreaterThan(2);
+      // Some games wait on a menu of text in a single colour.
+      expect(new Set(machine.vdp.framebuffer).size).toBeGreaterThan(1);
     }, 60_000);
   }
 });

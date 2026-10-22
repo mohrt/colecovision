@@ -12,9 +12,11 @@ No commercial games are included either. Use images of cartridges you own, or ho
 
 ## Free games
 
-`npm run build:games` builds three small games from their source code into `public/games/`, where they appear in a "Free games" picker: **Climber**, **Shoot** and **Siege**, by Steven Hugg from the [8bitworkshop](https://github.com/sehugg/8bitworkshop) examples (GNU GPL v3), linked with Philipp Klaus Krause's [LibCV](http://www.colecovision.eu/ColecoVision/development/libcv.shtml) 0.28 (GNU LGPL v2.1). It needs the [SDCC](https://sdcc.sourceforge.net/) compiler (`brew install sdcc`, or `apt-get install sdcc`). `scripts/games-catalog.json` pins the sources (an 8bitworkshop commit and LibCV's checksum).
+`npm run build:games` puts ten freely licensed games into `public/games/`, where they appear in a "Free games" picker. `scripts/games-catalog.json` pins every source (commits and checksums). A game whose tools are missing is left out.
 
-The games copy their font from the BIOS starting at character 0, which only works with 8bitworkshop's own BIOS; with the Coleco BIOS, characters 0-31 would show garbage. The build blanks those characters after the copy, and that is its only change to the sources.
+- **Climber**, **Shoot** and **Siege**, by Steven Hugg from the [8bitworkshop](https://github.com/sehugg/8bitworkshop) examples (GNU GPL v3), are built from source and linked with Philipp Klaus Krause's [LibCV](http://www.colecovision.eu/ColecoVision/development/libcv.shtml) 0.28 (GNU LGPL v2.1). They need the [SDCC](https://sdcc.sourceforge.net/) compiler (`brew install sdcc`, or `apt-get install sdcc`). They copy their font from the BIOS starting at character 0, which only works with 8bitworkshop's own BIOS; with the Coleco BIOS, characters 0-31 would show garbage. The build blanks those characters after the copy, and that is its only change to the sources.
+- **Brinquitos**, **Space Attack** and **Viboritas**, by Óscar Toledo G. from the [CVBasic](https://github.com/nanochess/CVBasic) examples (BSD 2-clause), are built from source with CVBasic and his [Gasm80](https://github.com/nanochess/gasm80) assembler, which the build compiles first (it needs a C compiler and make).
+- **Cye**, **Search for the Stolen Crown Jewels** and **Shunting Puzzle** (CC BY-SA 4.0) and **Monster Masher** (GNU GPL v3 or later), by Philipp Klaus Krause, are downloaded as the cartridge images he released on [colecovision.eu](http://www.colecovision.eu/ColecoVision/games/). Monster Masher's comes from its source release.
 
 ## Controls
 
