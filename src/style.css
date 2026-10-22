@@ -490,7 +490,7 @@ input[type='range'] {
 }
 
 .game-info a,
-.bios-rom-names a {
+.bios-tip a {
   color: var(--accent-soft);
 }
 
