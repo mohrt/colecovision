@@ -1,3 +1,4 @@
+import { trackGameLoaded } from './analytics';
 import { AudioOutput } from './audio/audio-output';
 import { BiosStore, KNOWN_BIOS_CRC, checkBios, crc32 } from './bios/bios-store';
 import { BIOS_SIZE } from './bus';
@@ -197,6 +198,7 @@ async function main(): Promise<void> {
         if (!machine.bios) throw new Error('The console needs its BIOS before it can play a cartridge.');
         const game = bundledGames.find((entry) => entry.file === chosen.name);
         insertImage(media.image, fromZip ? `${chosen.name} from ${file.name}` : chosen.name, game?.title);
+        trackGameLoaded('colecovision', game?.title);
       },
       onGame: (index) => fetchGame(import.meta.env.BASE_URL, bundledGames[index]),
       onBiosFile: async (file) => {
