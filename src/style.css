@@ -75,7 +75,8 @@ body.needs-bios #screen,
 body.needs-bios .paused-label,
 body.needs-bios .toolbar,
 body.needs-bios .cart-panel,
-body.needs-bios .controls {
+body.needs-bios .controls,
+body.needs-bios .keypad {
   display: none !important;
 }
 
@@ -550,7 +551,7 @@ input[type='range'] {
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
-  margin-top: 0.75rem;
+  margin-top: 0;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
@@ -610,4 +611,14 @@ input[type='range'] {
   color: #777;
   font-size: 0.8rem;
   text-align: center;
+}
+
+@media (max-width: 900px) {
+  main {
+    justify-content: flex-start;
+  }
+
+  body:has(.keypad:not([hidden])) {
+    --screen-width: min(96vw, calc((100dvh - 16rem) * var(--screen-aspect)));
+  }
 }
